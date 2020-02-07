@@ -15,7 +15,7 @@ class User extends Authenticatable {
      *
      * @var array
      */
-    
+
     protected $fillable = [
         'name', 'email', 'password','provider','provider_id'
     ];
@@ -194,18 +194,21 @@ class User extends Authenticatable {
         return $booleano;
     }
 
-  
+    public function isProfesorAlumno(User $alumno = null){
+        $gruposAlumno = $alumno->misGruposMatriculados()->get();
+        $gruposProfesor = $this->misGruposImpartidos()->get();
+        return $gruposAlumno->intersect($gruposProfesor)->count() > 0 ? true : false;
+    }
+
     public function misGruposMatriculados() {
-        return $this->hasManyThrough(
+        return $this->belongsToMany(
             'App\Grupo',
-            'App\Matricula',
-            'alumno', // Foreign key on anyosescolares table...
-            'id', // Foreign key on grupos table...
-            'id', // Local key on centros table...
-            'id' // Local key on anyosescolares table...
+            'materiasmatriculadas',
+            'alumno',
+            'grupo'
         );
     }
-  
+
     public function misProfesores(Nivel $nivel = null){
         //tenemos que sacar todas las matrículas que tiene un usuario
         $id = $this->id;
@@ -227,16 +230,14 @@ class User extends Authenticatable {
     }
 
     public function misGruposImpartidos() {
-        return $this->hasManyThrough(
-            'App\Grupo', //Destino
-            'App\Materiaimpartida', //Intermedio
-            'docente', // Foreign Key User > Materiaimpartida
-            'id', // Foreign Key Materiaimpartida > Grupo
-            'id', // Local Key User
-            'grupo' // Local Key Materiaimpartida
+        return $this->belongsToMany(
+            'App\Grupo',
+            'materiasimpartidas',
+            'docente',
+            'grupo'
         );
     }
-  
+
     public function misMateriasMatriculadas() {
         return $this->belongsToMany(
             'App\Materia',
