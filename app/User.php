@@ -15,7 +15,7 @@ class User extends Authenticatable {
      *
      * @var array
      */
-    
+
     protected $fillable = [
         'name', 'email', 'password','provider','provider_id'
     ];
@@ -186,7 +186,33 @@ class User extends Authenticatable {
         return $booleano;
     }
 
-  
+
+
+    public function isProfesorAlumno(User $id_alumno = null){
+        //hay que comprobar que el usuario autenticado  da clases al alumno que se le ha pasado como parametro
+
+        $idUser = $this ->id;
+        $respuesta = false;
+        $matriculaAlumno = Matricula::where('alumno' , $id_alumno)->get();
+        $materiasProfesor = Materiaimpartida::where('docente' , $idUser)->get();
+        //$materiasAlumno = Materiamatriculada::where('alumno' , $id_alumno)->get();
+        //$materiasProfesor = Materiaimpartida::where('docente' , $idUser)->get();
+
+
+
+       /* for($i =0; $i < count($materiasAlumno); $i++){
+            $materias[$i] = $materiasAlumno[$i]->materia;
+
+            for($z =0; $z < count($materiasProfesor); $z++){
+                $materiasP[$z] = $materiasProfesor[$z]->materiaP;
+            }
+        } */
+
+        //Sacamos las materias del alumno, y comprobamos que profesor se las imparte
+
+
+    }
+
     public function misGruposMatriculados() {
         return $this->hasManyThrough(
             'App\Grupo',
@@ -197,7 +223,7 @@ class User extends Authenticatable {
             'id' // Local key on anyosescolares table...
         );
     }
-  
+
     public function misProfesores(Nivel $nivel = null){
         //tenemos que sacar todas las matrículas que tiene un usuario
         $id = $this->id;
@@ -228,7 +254,7 @@ class User extends Authenticatable {
             'grupo' // Local Key Materiaimpartida
         );
     }
-  
+
     public function misMateriasMatriculadas() {
         return $this->belongsToMany(
             'App\Materia',
